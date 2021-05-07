@@ -1,0 +1,3 @@
+np.allclose(np.einsum('ijk,ijk->ijk', a,b), a*b)        # True 
+np.allclose(np.einsum('ijk,ikl->ijl', a,b), a@b)        # True
+np.allclose(np.einsum('ijk,lkm->ijlm',a,b), a.dot(b))   # True
