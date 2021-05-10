@@ -1,6 +1,6 @@
 import numpy as np
 
-class GaussianDiscrimativeAnalysis:
+class GaussianDiscrimativeAnalysis_2classes:
     """
     using X, y => construct X_hat => cal Pybyx
 
