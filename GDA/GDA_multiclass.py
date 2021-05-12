@@ -15,8 +15,8 @@ class GaussianDiscrimativeAnalysis_Multiclasses:
     phi: (list [C]), phi=(1/N)*sum_1->N y_i 1{y_i==1}
     mu: (array [C, D]), mu=sum_1->N X_i 1{y==k}/ sum__1->N 1{y_i==k}
         mu_k: [1, D]
-    sigma: (array [C, D, D]), sigma=(1/N) sum_1->N (xi-mu_k)^T(xi-mu_k) 1{y==k}
-        sigma_k: [1, D, D]
+    var: (array [C, D, D]), var=(1/N) sum_1->N (xi-mu_k)^T(xi-mu_k) 1{y==k}
+        var_k: [1, D, D]
 
     Variable:
     Pxbgy: P(x|y) [C, n]
@@ -29,7 +29,7 @@ class GaussianDiscrimativeAnalysis_Multiclasses:
     """
     def __init__(self, X, y):
         """
-        P(x|y=k)=N(mu_k, sigma_k)
+        P(x|y=k)=N(mu_k, var_k)
         P(y)=Ber(0, ... , C-1) = phi_k
         """
         self.X = X
@@ -39,7 +39,16 @@ class GaussianDiscrimativeAnalysis_Multiclasses:
         self.C = len(dic.keys())
         self.phi = list()
         self.mu = np.zeros((self.C, D))
-        self.sigma = np.zeros((self.C, D, D))
+        self.var = np.zeros((self.C, D, D))
+    
+    def SeparateXpoints(self):
+        N, _ = self.X.shape
+        dic = dict()
+        for k in range(self.C):
+            xk = np.array([self.X[i] for i in range(N) if self.y[i]==k])
+            dic.update({k: xk})
+        return dic
+
 
     def GenerativeModel(self):
         N, D = self.X.shape
@@ -55,11 +64,12 @@ class GaussianDiscrimativeAnalysis_Multiclasses:
             self.mu[k] = sumx_k / sum1_k
             # sum (xi-mu1) 1{yi==1}: [n, D] - [1, D] = [n, D]
             x_minus_mu = x_k - self.mu[k]
-            sm = np.sum(x_minus_mu.transpose() @ x_minus_mu, axis=0)
+            #sm = np.sum(x_minus_mu.transpose() @ x_minus_mu, axis=0)
+            sm = x_minus_mu.transpose() @ x_minus_mu
             # [D, D]
-            self.sigma[k] = sm / sum1_k 
+            self.var[k] = sm / sum1_k 
 
-            return self.mu, self.sigma, self.phi
+        return self.mu, self.var, self.phi
 
            
     def prediction(self, x_hat):
@@ -73,12 +83,12 @@ class GaussianDiscrimativeAnalysis_Multiclasses:
         M, D = x_hat.shape
         Pybgx = np.zeros((self.C, M))
         for k in range(self.C):
-            coeff = 1/(np.sqrt(2*np.pi)**D * np.sqrt(np.linalg.det(self.sigma[k])))
-            sigma_inv = np.linalg.inv(self.sigma[k])
+            coeff = 1/(np.sqrt(2*np.pi)**D * np.sqrt(np.linalg.det(self.var[k])))
+            var_inv = np.linalg.inv(self.var[k])
             # [M, D] - [1, D] = [M, D]
             xhat_minus_mu = x_hat - self.mu[k]
             # XT @ S_inv @ X = sum(X @ S_inv * X, axis=1): [M, D]->[M,]
-            exppart = np.exp(-0.5 * np.sum(xhat_minus_mu @ sigma_inv * xhat_minus_mu, axis=1)).ravel()
+            exppart = np.exp(-0.5 * np.sum(xhat_minus_mu @ var_inv * xhat_minus_mu, axis=1)).ravel()
             # P(x_hat|y_pred=k): [M,]
             Pxbgy_k = coeff * exppart 
             # P(y_pred)=phi_k
