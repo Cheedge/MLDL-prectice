@@ -3,8 +3,19 @@ from matplotlib.pyplot as plt
 
 def PlotGDA_2D(x_pca, x_pca_dic, y_pred, resolution):
     """
-    0, use PCA decomposition reduce the dimension to 2D
+    use PCA decomposition reduce the dimension to 2D
     then can use this func to plot
+    
+    Input:
+    x_pca: 2-dim data X (x0, x1) [N, 2]
+    x_pca_dic: which used for plot separated class points
+        by using SeparateXpoints()
+    y_pred: [N, 1]
+        by using prediction(x_hat)
+    resolution: int
+
+    Output:
+
     """
 
     # prepare separate x ponits for ploting
