@@ -51,17 +51,14 @@ class GaussianDiscrimativeAnalysis_2classes:
     P(y)=Ber(0, 1)=phi
     """
     
-    def cal_Pxbyy(self):
-        exp0 = np.exp(-0.5)
-        self.pxbyy0 = (1/(np.sqrt(2*np.pi)*self.sigma)*exp_0)
-        self.pxbyy1 = (1/(np.sqrt(2*np.pi)*self.sigma)*exp_1)
-        pass
+    #def cal_Pxbyy(self):
+    #    pass
 
-    def cal_Py(self):
-        self.py = self.phi
+    #def cal_Py(self):
+    #    self.py = self.phi
 
-    def cal_Pybyx(self):
-        pass
+    #def cal_Pybyx(self):
+    #    pass
 
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_iris
