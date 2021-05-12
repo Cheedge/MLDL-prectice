@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib.pyplot as plt
 
-def PlotGDA_2D(x_pca, x_pca_dic, resolution):
+def PlotGDA_2D(x_pca, x_pca_dic, y_pred, resolution):
     """
     0, use PCA decomposition reduce the dimension to 2D
     then can use this func to plot
@@ -19,8 +19,8 @@ def PlotGDA_2D(x_pca, x_pca_dic, resolution):
 
     x0_grid, x1_grid = np.meshgrid(x0, x1)
     x_hat = np.c_[x0_grid.ravel(), x1_grid.ravel()]
-    y_line = GDA_pca.prediction(x_hat)
-    z = y_line.reshape(resolution, resolution)
+    #y_pred = GDA_pca.prediction(x_hat)
+    z = y_pred.reshape(resolution, resolution)
     for i in range(C):
 	plt.scatter(x_pca_dic[i][:, 0], x_pca_dic[i][:, 1])
     plt.contourf(x0_grid, x1_grid, z, alpha=0.2)
