@@ -13,7 +13,6 @@ def PlotGDA_2D(x_pca, x_pca_dic, resolution):
     
     x0_min, x0_max = np.min(x_pca[:, 0]), np.min(x_pca[:,0])
     x1_min, x1_max = np.min(x_pca[:, 1]), np.min(x_pca[:,1])
-    # print(x_pca.shape,np.max(x_pca[:,0]), np.min(x_pca[:,0]))
     x0 = np.linspace(x0_min, x0_max, resolution)
     x1 = np.linspace(x1_min, x1_max, resolution)
 
