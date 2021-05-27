@@ -39,6 +39,7 @@ class GMM:
 
         zi ~ Multinomial(phi_i)
         xi|zi==j ~ N(mu_j, cov_j)
+
         '''
         N, D = self.X.shape
         self.w = np.empty([N, self.K])
@@ -68,16 +69,32 @@ class GMM:
         phi_j = (1/N) *sum_i wj^i
         mu_j = sum_i wj^i*xi /sum_i wj^i
         cov_j = sum_i (xi-muj)(xi-muj)T* wj^i / sum_i wj^i
+
+        !!!NOTICE!!!
+        here shows the "Singular cov matrix", if use matrix multiply
+        as:
+        so if use matrix multiplication:
+        [N,D]T@[N,D]=[D,D], then sum_i => [D]
+        if rank(X|z)<D<N:
+        Singularity!
         '''
         N, D = self.X.shape
         sum_w = np.sum(self.w, axis=0)
         for j in range(self.K):
+            covj = np.zeros([D, D])
             self.phi[ j ] = (1/N) * sum_w[ j ]
             # wj:[ N ]; X:[ N, D ]; mu:[ D ]
             # notice: should be [N, D]*[N, 1] not [N, D]*[N,]
             self.mu[ j ] = np.sum(self.X*self.w[ :, j ].reshape(N, 1), axis=0)/sum_w[ j ]
             # [N, D]T[N, D]
-            self.cov[ j ] = np.sum((self.X - self.mu[j]).transpose()@((self.X -self.mu[j])*self.w[ :, j ].reshape(N, 1)), axis=0)/sum_w[ j ]
+            #self.cov[ j ] = np.sum((self.X - self.mu[j]).transpose()@((self.X -self.mu[j])*self.w[ :, j ].reshape(N, 1)), axis=0)/sum_w[ j ]
+            for i in range(N):
+                print(covj,'\t')
+                print(self.X[i],'\t',self.mu[j],'\n')
+                # X_i:[D], mu_j:[D], w^i_j:[N, K]->1
+                covj += (self.X[i] - self.mu[j]).reshape(D, 1)@((self.X[i] -self.mu[j]).reshape(1, D))*self.w[i, j]
+            self.cov[j] = covj
+            print(self.cov[j])
 
     def LogLikelihood(self, z):
         '''
@@ -85,6 +102,7 @@ class GMM:
         zi=j->[0,K)
         P(zi) = phi(zi)
         P(xi|zi) = N(mu_zi, cov_zi)
+
         '''
         N, D = self.X.shape
         # [N]
@@ -93,7 +111,6 @@ class GMM:
         m = self.mu[z]
         # [D, D]
         s = self.cov[z]
-        print(z, m.shape, s.shape)
         coeff_l = 1/((2*np.pi)**(D/2)*np.sqrt(np.abs(np.linalg.det(s))))
         # sum[N, D]@[D, D]*[N, D]->[N]
         exppart_l = np.exp(-0.5*np.sum((self.X-m)@np.linalg.inv(s)*(self.X - m), axis=1))
