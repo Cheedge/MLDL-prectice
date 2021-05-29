@@ -97,7 +97,7 @@ class GMM:
         as:
         so if use matrix multiplication:
         [N,D]T@[N,D]=[D,D], then sum_i => [D]
-        if rank(X|z)<D<N:
+        if rank(X|z)<N<D:
         Singularity!
         '''
         N, D = self.X.shape
