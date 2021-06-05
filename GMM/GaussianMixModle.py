@@ -66,7 +66,7 @@ class GMM:
             Pzj = self.phi[j]
             # sum([ N, D ]@[ D, D ]*[ N, D ], axis=1)=sum([ N, D ],1)=[ N ]
             # notice: np.invert: element invert.
-            #coeff = 1/((2*np.pi)**(D/2)*np.sqrt(np.abs(np.linalg.det(self.cov[ j ]))))
+            #coeff = 1/((2*np.pi)**(D/2)*np.abs(np.linalg.det(self.cov[ j ])))
             #exppart = np.exp(-0.5*np.sum((self.X-self.mu[ j ])@np.linalg.inv(self.cov[ j ]+reg_cov)*(self.X - self.mu[ j ]), axis=1))
             #Pxbzj =  coeff * exppart.ravel()
             # must be positive semidefined(PSD) matrix: means invertable
@@ -146,7 +146,7 @@ class GMM:
         for i in range(N):
             # [K, N]->[N]
             Pzi = self.phi[z[i], i]
-            #coeff_l = 1/((2*np.pi)**(D/2)*np.sqrt(np.abs(np.linalg.det(s[ i ]))))
+            #coeff_l = 1/((2*np.pi)**(D/2)*np.abs(np.linalg.det(s[ i ])))
             ## sum[D]@[D, D]*[D]->float
             #exppart_l = np.exp(-0.5*np.sum((self.X[ i ]-m[ i ])@np.linalg.inv(s[ i ]+self.eps*np.identity(D))*(self.X[ i ] - m[ i ]), axis=0))
             #Pxbgz = coeff_l * exppart_l
